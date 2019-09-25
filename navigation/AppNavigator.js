@@ -13,7 +13,7 @@ export default createAppContainer(
     Access: AccessNavigator
   },
   {
-    initialRouteName: 'Main',
+    initialRouteName: 'Access',
     transitionConfig: () => fromLeft(500),
   })
 );

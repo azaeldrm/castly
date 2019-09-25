@@ -16,7 +16,7 @@ let SCREEN_HEIGHT = Dimensions.get('window').height;
 export default class SplashScreen extends React.Component {
 	render() {
 		return (
-			<Block flex>
+			<Block flex style={{backgroundColor: 'rgb(26, 26, 26)'}}>
 				<Video
 					source={require("../assets/videos/clouds2.mp4")}
 					rate={1.25}

@@ -5,7 +5,7 @@ import {
 	View,
 	Keyboard,
 	Dimensions,
-	TouchableHighlight
+	TouchableOpacity
 } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {Block, Text, Card, Icon} from "galio-framework";
@@ -328,13 +328,13 @@ export default class PredictionScreen extends React.Component {
 								>
 									Location
 								</Text>
-								<TouchableHighlight onPress={() => this.props.navigation.navigate("Details", this.state.predictionObject)}>
+								<TouchableOpacity onPress={() => this.props.navigation.navigate("Details", this.state.predictionObject)}>
 									<Text
 										style={[{textAlign: "left", marginBottom: 10}, vars.infoText]}
 									>
 										{this.state.predictionObject.location}
 									</Text>
-								</TouchableHighlight>
+								</TouchableOpacity>
 
 								<Block row space={"between"}>
 									<Block column>

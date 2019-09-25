@@ -49,129 +49,147 @@ export default class DetailsScreen extends React.Component {
 				<Header title="More details" textStyle={{color: theme.info}}/>
 
 				{/*Main block*/}
-				<Block
-					style={{
-						marginTop: 10,
-						marginHorizontal: 40,
-						justifyContent: "flex-end"
-					}}
-				>
-					<Text h4 style={{textAlign: "center", color: theme.info}}>
-						{predictionObject.location}
-					</Text>
-				</Block>
-				<Block
-					backgroundColor={"rgba(0, 0, 0, 0)"}
-					center
-					style={{width: "100%"}}
-				>
-					<Block style={{width: "100%", backgroundColor: "rgba(0, 255, 0, 0)"}}>
-						<Block center style={{backgroundColor: "rgba(201, 131, 195, 0)"}}>
-							<VictoryChart
-								width={vars.labelWidth}
-								height={vars.labelHeight}
-								style={{parent: {backgroundColor: theme.container}}}
-								maxDomain={{y: 1.1}}
-								containerComponent={
-									<VictoryVoronoiContainer voronoiDimension="x" />
-								}
-							>
-								<VictoryLine
-									data={predictionObject.forecast[0].optimalPair}
-									interpolation={"monotoneX"}
-									labels={({datum}) =>
-										`At ${datum.hour}, conditions are ${Math.floor(datum.value * 100)}% optimal`
+				<ScrollView style={{flex: 1}}>
+					<Block
+						style={{
+							marginTop: 10,
+							marginHorizontal: 40,
+							justifyContent: "flex-end"
+						}}
+					>
+						<Text h4 style={{textAlign: "center", color: theme.info}}>
+							{predictionObject.location}
+						</Text>
+					</Block>
+					<Block
+						backgroundColor={"rgba(0, 0, 0, 0)"}
+						center
+						style={{width: "100%"}}
+					>
+						<Block style={{width: "100%", backgroundColor: "rgba(0, 255, 0, 0)"}}>
+							<Block center style={{backgroundColor: "rgba(201, 131, 195, 0)"}}>
+								<VictoryChart
+									width={vars.labelWidth}
+									height={vars.labelHeight}
+									style={{parent: {backgroundColor: theme.container}}}
+									maxDomain={{y: 1.1}}
+									containerComponent={
+										<VictoryVoronoiContainer voronoiDimension="x" />
 									}
-									x="time"
-									y="value"
-									y0={() => 0}
-									range={{y: [-0.05, 2]}}
-									// domainPadding={[0.25, 0.25]}
-									style={{
-										data: {
-											stroke: "rgb(217, 204, 91)",
-											strokeWidth: 3,
-											strokeLinecap: "round"
+								>
+									<VictoryLine
+										data={predictionObject.forecast[0].optimalPair}
+										interpolation={"monotoneX"}
+										labels={({datum}) =>
+											`At ${datum.hour}, conditions are ${Math.floor(datum.value * 100)}% optimal`
 										}
-									}}
-									labelComponent={
-										<VictoryTooltip
-											constrainToVisibleArea
-											center={{x: vars.labelWidth / 2, y: 24}}
-											fontSize={6}
-											style={{fill: theme.subtitle}}
-											flyoutStyle={{
-												strokeWidth: 0,
-												fill: "rgba(0, 0, 0, 0)"
-											}}
-										/>
-									}
-								/>
-								<VictoryScatter
-									data={predictionObject.forecast[0].optimalPair}
-									x="time"
-									y="value"
-									y0={() => -0.05}
-									size={4}
-									style={{
-										data: {
-											fill: theme.background,
-											stroke: "rgb(217, 204, 91)",
-											strokeWidth: 3
+										x="time"
+										y="value"
+										y0={() => 0}
+										range={{y: [-0.05, 2]}}
+										// domainPadding={[0.25, 0.25]}
+										style={{
+											data: {
+												stroke: "rgb(217, 204, 91)",
+												strokeWidth: 3,
+												strokeLinecap: "round"
+											}
+										}}
+										labelComponent={
+											<VictoryTooltip
+												constrainToVisibleArea
+												center={{x: vars.labelWidth / 2, y: 24}}
+												fontSize={6}
+												style={{fill: theme.subtitle}}
+												flyoutStyle={{
+													strokeWidth: 0,
+													fill: "rgba(0, 0, 0, 0)"
+												}}
+											/>
 										}
-									}}
-								/>
-								<VictoryAxis
-									dependentAxis
-									tickFormat={t => `${t * 100}%`}
-									style={{
-										axis: {stroke: "none"},
-										tickLabels: {fill: theme.subtitle, fontSize: 10}
-									}}
-								/>
-								<VictoryAxis
-									crossAxis
-									tickFormat={t =>
-										t / 12 >= 1
-											? t / 12 === 1
-												? `${t}PM`
-												: `${t - 12}PM`
-											: `${t}AM`
-									}
-									style={{
-										axis: {stroke: "none"},
-										tickLabels: {fill: theme.subtitle, fontSize: 10}
-									}}
-								/>
-							</VictoryChart>
-						</Block>
+									/>
+									<VictoryScatter
+										data={predictionObject.forecast[0].optimalPair}
+										x="time"
+										y="value"
+										y0={() => -0.05}
+										size={4}
+										style={{
+											data: {
+												fill: theme.background,
+												stroke: "rgb(217, 204, 91)",
+												strokeWidth: 3
+											}
+										}}
+									/>
+									<VictoryAxis
+										dependentAxis
+										tickFormat={t => `${t * 100}%`}
+										style={{
+											axis: {stroke: "none"},
+											tickLabels: {fill: theme.subtitle, fontSize: 10}
+										}}
+									/>
+									<VictoryAxis
+										crossAxis
+										tickFormat={t =>
+											t / 12 >= 1
+												? t / 12 === 1
+													? `${t}PM`
+													: `${t - 12}PM`
+												: `${t}AM`
+										}
+										style={{
+											axis: {stroke: "none"},
+											tickLabels: {fill: theme.subtitle, fontSize: 10}
+										}}
+									/>
+								</VictoryChart>
+							</Block>
 
-						<Block
-							style={{
-								backgroundColor: "rgba(138, 214, 148, 0)",
-								marginHorizontal: 40,
-								marginTop: 10
-							}}
-						>
-							<Text
-								style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
+							<Block
+								style={{
+									backgroundColor: "rgba(138, 214, 148, 0)",
+									marginHorizontal: 40,
+									marginTop: 10
+								}}
 							>
-								Optimal time calculated
-							</Text>
-							<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
-								{sentence}
-							</Text>
-							<Text
-								style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
-							>
-								Overall condition
-							</Text>
-							<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
-								{predictionObject.forecast[0].summary}
-							</Text>
+								<Text
+									style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
+								>
+									Optimal time calculated
+								</Text>
+								<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
+									{sentence}
+								</Text>
+								<Text
+									style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
+								>
+									Overall condition
+								</Text>
+								<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
+									{predictionObject.forecast[0].summary}
+								</Text>
+								<Text
+									style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
+								>
+									Optimal time calculated
+								</Text>
+								<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
+									{sentence}
+								</Text>
+								<Text
+									style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
+								>
+									Overall condition
+								</Text>
+								<Text style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}>
+									{predictionObject.forecast[0].summary}
+								</Text>
+							</Block>
 						</Block>
 					</Block>
-				</Block>
+				</ScrollView>
 			</Block>
 		);
 	}

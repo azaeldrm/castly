@@ -6,6 +6,7 @@ import { fadeIn } from 'react-navigation-transitions';
 import SignUpScreen from "../screens/SignUpScreen";
 import SplashScreen from "../screens/SplashScreen";
 import LoginScreen from "../screens/LoginScreen";
+import LoadingScreen from "../screens/LoadingScreen";
 
 const config = Platform.select({
 	web: {headerMode: "screen"},
@@ -16,10 +17,11 @@ const AccessSwitch = createStackNavigator(
 	{
 		SignUp: SignUpScreen,
 		Splash: SplashScreen,
-		Login: LoginScreen
+		Login: LoginScreen,
+		Loading: LoadingScreen,
 	},
 	{
-		initialRouteName: "Splash",
+		initialRouteName: "Loading",
 		transitionConfig: () => fadeIn(1000),
 	}
 );
