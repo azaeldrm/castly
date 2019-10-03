@@ -25,6 +25,7 @@ import {Video} from "expo-av";
 
 import Header from "../components/Header";
 import Videos from "../constants/Videos";
+import Colors from "../constants/Themes";
 
 let SCREEN_WIDTH = Dimensions.get("window").width;
 let SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -121,7 +122,9 @@ export default class PredictionScreen extends React.Component {
 						<Block
 							style={[
 								styles.backgroundVideo,
-								{backgroundColor: "rgba(0, 0, 0, 0.5)"}
+								{
+									backgroundColor: theme.layer
+								}
 							]}
 						/>
 					</Block>
@@ -391,18 +394,7 @@ export default class PredictionScreen extends React.Component {
 	}
 }
 
-const colors = {
-	dark: {
-		subtitle: "rgb(185, 185, 185)",
-		info: "rgb(255, 255, 255)",
-		component: "rgb(38, 38, 38)",
-		optimalColor: "rgb(136, 193, 101)",
-		nonOptimalColor: "rgb(130, 130, 130)",
-		background: "rgb(26, 26, 26)"
-	}
-};
-
-const theme = THEMESTYLE === "dark" ? colors.dark : colors.light;
+const theme = THEMESTYLE === "dark" ? Colors.dark : Colors.light;
 
 const vars = {
 	labelWidth: Dimensions.get("window").width - 20,
