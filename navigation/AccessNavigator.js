@@ -18,7 +18,12 @@ const AccessSwitch = createStackNavigator(
 		SignUp: SignUpScreen,
 		Splash: SplashScreen,
 		Login: LoginScreen,
-		Loading: LoadingScreen,
+		Loading: {
+			screen: LoadingScreen,
+			navigationOptions: {
+				headerTransparent: true,
+			}
+		}
 	},
 	{
 		initialRouteName: "Loading",

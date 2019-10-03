@@ -3,7 +3,8 @@ import {
 	ScrollView,
 	StyleSheet,
 	ImageBackground,
-	SafeAreaView
+	SafeAreaView,
+	TouchableOpacity
 } from "react-native";
 import {Block, Text, Button, Icon, Input, NavBar} from "galio-framework";
 import firebase from "firebase";
@@ -67,6 +68,10 @@ export default class LoginScreen extends React.Component {
 							password
 							placeholder="Password"
 							onChangeText={password => this.setState({password})}
+							onSubmitEditing={() => this.Login(
+								this.state.email,
+								this.state.password
+							)}
 						/>
 						{this.state.errorMessage && (
 							<Text p center color="rgb(227, 79, 79)" style={{marginTop: 20}}>
@@ -75,26 +80,28 @@ export default class LoginScreen extends React.Component {
 						)}
 					</Block>
 					<Block flex center>
-						<Text p
-							color="rgb(255, 255, 255)"
-							onPress={() =>
-								this.Login(
-									this.state.email,
-									this.state.password
-								)
-							}
-							style={{marginVertical: 30}}
-						>
-							LOG IN
-						</Text>
-						<Text
-							p
-							color="rgb(255, 255, 255)"
-							onPress={() => this.props.navigation.navigate("SignUp")}
-							style={{marginTop: 20, marginBottom: 60}}
-						>
-							Don't have an account? Sign up!
-						</Text>
+						<TouchableOpacity onPress={() =>
+							this.Login(
+								this.state.email,
+								this.state.password
+							)
+						}>
+							<Text p
+								color="rgb(255, 255, 255)"
+								style={{marginVertical: 30}}
+							>
+								LOG IN
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => this.props.navigation.navigate("SignUp")}>
+							<Text
+								p
+								color="rgb(255, 255, 255)"
+								style={{marginTop: 20, marginBottom: 60}}
+							>
+								Don't have an account? Sign up!
+							</Text>
+						</TouchableOpacity>
 					</Block>
 
 					{/*<Block center style={{marginHorizontal: 20}}>

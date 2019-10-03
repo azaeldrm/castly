@@ -1,81 +1,304 @@
-import React from "react";
-import {ScrollView, StyleSheet, View, Dimensions, TouchableOpacity} from "react-native";
+import React, {useEffect, useRef} from "react";
+import {
+	ScrollView,
+	StyleSheet,
+	View,
+	TouchableOpacity,
+	Animated,
+	RefreshControl,
+	ActivityIndicator,
+	ToastAndroid
+} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {Block, Text, Card, Icon} from "galio-framework";
-import firebase from "firebase";
-
+import * as Permissions from "expo-permissions";
+import * as Location from "expo-location";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+// import moment from "moment-timezone";
 import Header from "../components/Header";
 
-let SCREEN_WIDTH = Dimensions.get("window").width;
-let SCREEN_HEIGHT = Dimensions.get("window").height;
 let THEMESTYLE = "dark";
+
+const usePulse = () => {
+	const scale = useRef(new Animated.Value(1)).current;
+
+	const pulse = () => {
+		Animated.sequence([
+			Animated.timing(scale,  {toValue: 1.2, duration: 500}),
+			Animated.timing(scale,  {toValue: 0.95, duration: 1000})
+		]).start(() => pulse())
+	}
+
+	useEffect(() => {
+		setTimeout(() => pulse(), 200)
+	}, [])
+
+	return scale
+}
+
+const Square = () => {
+	const scale = usePulse();
+	return (
+	  <Box scale={scale} />
+  );
+}
+
+const Box = ({scale = 1, size = 40 }) => (
+  <Animated.View
+    style={[
+      {
+        width: size,
+        height: size,
+        transform: [{ scale }],
+      },
+    ]}
+  >
+		<MaterialCommunityIcons
+			size={size}
+			name={"map-marker-outline"}
+			color={theme.subtitle}
+			style={{alignSelf: "center", marginBottom: 4}}
+		/>
+	</Animated.View>
+);
 
 export default class HomeScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			email: "",
-			password: "",
-			errorMessage: null
+			count: 1,
+			isLoading: true,
+			isRefreshing: false,
+			isLocationOn: false,
+			fadeValue: new Animated.Value(0),
+			predictionObject: null
 		};
 	}
 
-	render() {
-		return (
-			<Block flex style={{backgroundColor: theme.background, paddingTop: 50}}>
-				{/*Introduction block*/}
-				{/*<Header title='Dashboard'/>*/}
-				<Block flex={0.2} style={{marginHorizontal: 40}}>
-					<Text h3 style={{color: theme.info}}>
-						Welcome Azael!
-					</Text>
-					<Text style={[{color: theme.info}, vars.subtitleText]}>
-						These are the stats for your location:
-					</Text>
-					<TouchableOpacity onPress={() => firebase.auth().signOut()
-					  .then(function() {
-					    console.log('Log out successfully, bitch.')
-					  })
-					  .catch(function(error) {
-					    // An error happened
-					  })}>
-							<Text h4 style={[{color: theme.info}, vars.infoText]}>Hello nigga log out</Text>
-						</TouchableOpacity>
-				</Block>
+	icons = {
+		"partly-cloudy-day": "weather-partlycloudy",
+		"partly-cloudy-night": "weather-partlycloudy",
+		"clear-day": "weather-sunny",
+		"clear-night": "weather-night",
+		"rain": "weather-rainy",
+		"snow": "weather-snowy",
+		"wind": "weather-windy",
+		"fog": "weather-fog",
+		"cloudy": "weather-cloudy",
+		"hail": "weather-hail",
+		"thunderstorm": "weather-lighting",
+		"tornado": "weather-hurricane"
+	};
 
-				{/*Main block*/}
-				<ScrollView style={{flex: 1}}>
-					<Block style={{marginHorizontal: 40}}>
-						<Text
-							style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
-						>
-							Weather conditions
+	_fadeInAnimation = () => {
+		Animated.timing(this.state.fadeValue, {
+			toValue: 1,
+			duration: 500,
+			useNativeDriver: true
+		}).start();
+	};
+
+	instantFetch = async (timestamp, latitude, longitude) => {
+		return fetch(
+			`https://us-central1-castly-ffd3b.cloudfunctions.net/functions/instant/?timestamp=${timestamp}&lat=${latitude}&lon=${longitude}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			}
+		)
+			.then(response => response.json())
+			.catch(error => {
+				throw new Error("Fetch not possible.");
+			})
+			.then(responseJson => {
+				this.setState({
+					predictionObject: responseJson
+				});
+				return responseJson;
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	};
+
+	_getLocationAsync = async () => {
+		let {status} = await Permissions.askAsync(Permissions.LOCATION);
+		if (status !== "granted") {
+			this.setState({
+				errorMessage: "Permission to access location was denied"
+			});
+			ToastAndroid.showWithGravityAndOffset(
+				"Permission to access location denied",
+				ToastAndroid.SHORT,
+				ToastAndroid.BOTTOM,
+				0,
+				200
+			);
+		}
+		let location = await Location.getCurrentPositionAsync({
+			enableHighAccuracy: true
+		});
+		return location;
+	};
+
+	_handleLocationError = () => {
+		ToastAndroid.showWithGravityAndOffset(
+			"Please enable Location services",
+			ToastAndroid.SHORT,
+			ToastAndroid.BOTTOM,
+			0,
+			200
+		);
+		throw new Error("Location services off. Please enable.");
+	};
+
+	_fetchAndDisplay = () => {
+		this.setState({isLoading: true});
+		this._getLocationAsync()
+			.catch(error => {
+				this.setState({isLoading: false});
+				this._handleLocationError();
+			})
+			.then(location => {
+				console.log("Acquiring location!");
+				let response = this.instantFetch(
+					Math.floor(location.timestamp / 1000),
+					location.coords.latitude,
+					location.coords.longitude
+				);
+				return response;
+			})
+			.then(response => {
+				console.log("Location fetched!");
+				this.setState({
+					isRefreshing: false,
+					isLoading: false,
+					fadeValue: new Animated.Value(0)
+				});
+				this._fadeInAnimation();
+				console.log("Data displayed!");
+				console.log(this.predictionObject);
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	};
+
+	componentDidMount() {
+		this._fetchAndDisplay();
+	}
+
+	render() {
+
+		return (
+			<Block flex style={{backgroundColor: theme.background}}>
+				{/*Introduction block*/}
+				<Block style={{height: 24}} />
+				<ScrollView
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.isRefreshing}
+							onRefresh={this._fetchAndDisplay}
+							progressBackgroundColor={theme.component}
+							colors={[theme.info]}
+							tintColor={[theme.info]}
+						/>
+					}
+					style={{flex: 1}}
+				>
+					<Block
+						style={{marginHorizontal: 40, paddingTop: 30, paddingBottom: 50}}
+					>
+						<Text h3 style={{color: theme.info}}>
+							Welcome Azael!
 						</Text>
-						<Text
-							style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}
-						>
-							Lorem ipsum dolor sit amet, duo ad molestie posidonium, his id
-							vide ancillae, option quaeque sea no. Lorem suscipit deterruisset
-							cum ex, eos utroque definitiones ad. Tibique phaedrum ex his, ut
-							pro omnis omnium. Laoreet eligendi sed eu, ius cu soluta
-							laboramus. No ignota labores dissentiunt per, mea error paulo
-							definitiones in, alii vulputate in mea.
-						</Text>
-						<Text
-							style={[{textAlign: "left", marginBottom: 2}, vars.subtitleText]}
-						>
-							Overall condition
-						</Text>
-						<Text
-							style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}
-						>
-							Usu nulla ornatus necessitatibus an, an sit nonumes noluisse
-							deseruisse, ad dicam dicunt per. Et mea porro blandit. An senserit
-							assentior efficiendi sed, sea te hinc dicam offendit. Dolores
-							maiestatis argumentum ea sea, ius prima noster cu, ex eum vocibus
-							sapientem. At dicam semper usu.
+						<Text style={[{color: theme.info}, vars.subtitleText]}>
+							These are the stats for your location:
 						</Text>
 					</Block>
+
+					{/*Main block*/}
+					{this.state.predictionObject ? (
+						<Animated.View
+							style={{marginHorizontal: 40, opacity: this.state.fadeValue}}
+						>
+							<MaterialCommunityIcons
+								size={60}
+								name={this.icons[this.state.predictionObject.forecast[0].icon]}
+								color={theme.subtitle}
+								style={{alignSelf: "center", marginBottom: 4}}
+							/>
+							<Text
+								style={[
+									{textAlign: "center", marginBottom: 60},
+									vars.subtitleText
+								]}
+							>
+								{`${this.state.predictionObject.city}, ${
+									this.state.predictionObject.country
+								}`}
+							</Text>
+							<Text
+								style={[
+									{textAlign: "left", marginBottom: 2},
+									vars.subtitleText
+								]}
+							>
+								Weather conditions
+							</Text>
+							<Text
+								style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}
+							>
+								{`Currently ${this.state.predictionObject.forecast[0].summary.toLowerCase()}.`}
+							</Text>
+							<Text
+								style={[
+									{textAlign: "left", marginBottom: 2},
+									vars.subtitleText
+								]}
+							>
+								Temperature
+							</Text>
+							<Text
+								style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}
+							>
+								{`${Math.floor(
+									this.state.predictionObject.forecast[0].temp
+								)} F`}
+							</Text>
+							<Text
+								style={[
+									{textAlign: "left", marginBottom: 2},
+									vars.subtitleText
+								]}
+							>
+								Overall condition
+							</Text>
+							<Text
+								style={[{textAlign: "left", marginBottom: 30}, vars.infoText]}
+							>
+								Usu nulla ornatus necessitatibus an, an sit nonumes noluisse
+								deseruisse, ad dicam dicunt per. Et mea porro blandit. An
+								senserit assentior efficiendi sed, sea te hinc dicam offendit.
+								Dolores maiestatis argumentum ea sea, ius prima noster cu, ex
+								eum vocibus sapientem. At dicam semper usu.
+							</Text>
+						</Animated.View>
+					) : this.state.isLoading ? (
+						<Block flex center style={{marginTop: 100}}>
+							<ActivityIndicator size={70} color={theme.optimalColor} />
+						</Block>
+					) : (
+						<Block flex center style={{marginTop: 100, marginHorizontal: 40}}>
+							<Square />
+							<Text style={[{textAlign: "center", marginTop: 40}, vars.subtitleText]}>
+								Scroll down to enable Location Services and see relevant information.
+							</Text>
+
+						</Block>
+					)}
 				</ScrollView>
 			</Block>
 		);
@@ -90,29 +313,20 @@ const colors = {
 		optimalColor: "rgb(136, 193, 101)",
 		nonOptimalColor: "rgb(130, 130, 130)",
 		background: "rgb(26, 26, 26)"
+	},
+	light: {
+		subtitle: "rgb(150, 150, 150)",
+		info: "rgb(0, 0, 0)",
+		component: "rgb(223, 223, 223)",
+		optimalColor: "rgb(95, 156, 58)",
+		nonOptimalColor: "rgb(200, 200, 200)",
+		background: "rgb(255, 255, 255)"
 	}
 };
 
 const theme = THEMESTYLE === "dark" ? colors.dark : colors.light;
 
 const vars = {
-	labelWidth: Dimensions.get("window").width - 20,
-	labelHeight: Dimensions.get("window").height / 3,
-	minLength: 3,
-	appTitle: "Castly",
-	appColor: {
-		background: {
-			weather: "rgba(255, 218, 29, 0.62)",
-			normal: "rgb(240, 240, 240)",
-			dark: "rgb(26, 26, 26)",
-			card: "rgb(245, 245, 245)"
-		},
-		font: {
-			normal: "rgb(26, 26, 26)",
-			dark: "rgb(235, 235, 235)",
-			card: "rgb(26, 26, 26)"
-		}
-	},
 	fontSize: {
 		mini: 8,
 		small: 10,

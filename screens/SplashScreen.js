@@ -5,7 +5,8 @@ import {
 	ImageBackground,
 	SafeAreaView,
 	widthNavigation,
-	Dimensions
+	Dimensions,
+	TouchableOpacity
 } from "react-native";
 import {Block, Text, Button, Icon, Input} from "galio-framework";
 import {Video} from "expo-av";
@@ -27,7 +28,7 @@ export default class SplashScreen extends React.Component {
 					style={styles.backgroundVideo}
 				/>
 				<Block flex>
-					<Block flex={4} style={{marginTop: 100, marginHorizontal: 40}}>
+					<Block flex={5} style={{marginTop: 100, marginHorizontal: 40}}>
 						<Text h3 color="rgb(255, 255, 255)">
 							castly.
 						</Text>
@@ -36,25 +37,19 @@ export default class SplashScreen extends React.Component {
 						</Text>
 					</Block>
 
-					<Block row center flex>
-						<Button
-							size="small"
-							radius={0}
-							styles={{elevation: 0}}
-							color="rgba(0, 0, 0, 0)"
+					<Block row flex space={'evenly'}>
+						<TouchableOpacity
+							style={{zIndex: 1}}
 							onPress={() => this.props.navigation.navigate("Login")}
 						>
-							LOG IN
-						</Button>
-						<Button
-							size="small"
-							radius={0}
-							buttonStyle={{elevation: 0}}
-							color="rgba(0, 0, 0, 0)"
+							<Text p style={{textAlign: 'center', color: 'rgb(255, 255, 255)'}}>LOG IN</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={{zIndex: 1}}
 							onPress={() => this.props.navigation.navigate("SignUp")}
 						>
-							SIGN UP
-						</Button>
+							<Text p style={{textAlign: 'center', color: 'rgb(255, 255, 255)'}}>SIGN UP</Text>
+						</TouchableOpacity>
 					</Block>
 				</Block>
 			</Block>

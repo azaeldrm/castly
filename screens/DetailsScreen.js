@@ -122,14 +122,14 @@ export default class DetailsScreen extends React.Component {
 											}
 										}}
 									/>
-									<VictoryAxis
+									{/*<VictoryAxis
 										dependentAxis
 										tickFormat={t => `${t * 100}%`}
 										style={{
 											axis: {stroke: "none"},
 											tickLabels: {fill: theme.subtitle, fontSize: 10}
 										}}
-									/>
+									/>*/}
 									<VictoryAxis
 										crossAxis
 										tickFormat={t =>
