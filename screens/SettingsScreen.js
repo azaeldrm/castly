@@ -3,6 +3,8 @@ import {StyleSheet, TouchableOpacity} from "react-native";
 import {Block, Text} from "galio-framework";
 import firebase from "firebase";
 
+import Colors from "../constants/Themes";
+
 let THEMESTYLE = "dark";
 
 export default class Loading extends React.Component {
@@ -34,18 +36,7 @@ export default class Loading extends React.Component {
 	}
 }
 
-const colors = {
-	dark: {
-		subtitle: "rgb(185, 185, 185)",
-		info: "rgb(255, 255, 255)",
-		component: "rgb(38, 38, 38)",
-		optimalColor: "rgb(136, 193, 101)",
-		nonOptimalColor: "rgb(130, 130, 130)",
-		background: "rgb(26, 26, 26)"
-	}
-};
-
-const theme = THEMESTYLE === "dark" ? colors.dark : colors.light;
+const theme = THEMESTYLE === "dark" ? Colors.dark : Colors.light;
 
 const vars = {
 	subtitleText: {
