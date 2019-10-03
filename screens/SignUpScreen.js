@@ -34,7 +34,6 @@ export default class SignUpScreen extends React.Component {
 	};
 
 	render() {
-		var navBarHeight = this.state.navBarHeight;
 		return (
 			<ImageBackground
 				source={require("../assets/images/backgrounds/cloudy1.jpg")}

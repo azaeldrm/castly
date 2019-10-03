@@ -24,6 +24,7 @@ import {
 import {Video} from "expo-av";
 
 import Header from "../components/Header";
+import Videos from "../constants/Videos";
 
 let SCREEN_WIDTH = Dimensions.get("window").width;
 let SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -61,8 +62,10 @@ export default class PredictionScreen extends React.Component {
 				// console.log(responseJson.forecast[0].optimalPair);
 				this.setState({
 					predictionObject: responseJson,
-					isPredicted: true
+					isPredicted: true,
+					icon: responseJson.forecast[0].icon,
 				});
+				console.log(responseJson.forecast[0].icon)
 			})
 			.catch(error => {
 				console.log(error);
@@ -107,7 +110,7 @@ export default class PredictionScreen extends React.Component {
 				{this.state.isPredicted && (
 					<Block style={styles.backgroundVideo}>
 						<Video
-							source={require("../assets/videos/rain1.mp4")}
+							source={Videos.weather[this.state.predictionObject.forecast[0].icon]}
 							rate={1.25}
 							isMuted={true}
 							resizeMode="cover"
