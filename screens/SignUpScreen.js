@@ -19,12 +19,20 @@ export default class SignUpScreen extends React.Component {
 		};
 	}
 
-	SignUp = (email, password) => {
+	SignUp = (name, email, password) => {
 		firebase
 			.auth()
 			.createUserWithEmailAndPassword(email, password)
+			.then((userCredentials) => {
+				if (userCredentials.user) {
+					userCredentials.user.updateProfile({
+						displayName: name
+					})
+				}
+			})
 			.then(() => {
-				this.props.navigation.navigate("Splash")})
+				this.props.navigation.navigate("Splash")
+			})
       .catch((error) => {
         this.setState({
           errorMessage: error.message
@@ -58,10 +66,10 @@ export default class SignUpScreen extends React.Component {
               color="rgb(255, 255, 255)"
 							placeholderTextColor="rgb(220, 220, 220)"
 							autoCapitalize="words"
-							placeholder="First Name"
-							onChangeText={first => this.setState({first})}
+							placeholder="Name"
+							onChangeText={name => this.setState({name})}
 						/>
-						<Input
+						{/*<Input
 							rounded
 							borderless={true}
 							bgColor="rgba(255, 255, 255, 0.2)"
@@ -71,6 +79,7 @@ export default class SignUpScreen extends React.Component {
 							placeholder="Last Name"
 							onChangeText={last => this.setState({last})}
 						/>
+						*/}
 						<Input
 							rounded
 							borderless={true}
@@ -101,6 +110,7 @@ export default class SignUpScreen extends React.Component {
 							color="rgb(255, 255, 255)"
 							onPress={() =>
 								this.SignUp(
+									this.state.name,
 									this.state.email,
 									this.state.password
 								)

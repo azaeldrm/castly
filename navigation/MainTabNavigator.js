@@ -5,8 +5,11 @@ import {createStackNavigator, createBottomTabNavigator} from "react-navigation";
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
 import PredictionScreen from "../screens/PredictionScreen";
-import SettingsScreen from "../screens/SettingsScreen";
 import DetailsScreen from "../screens/DetailsScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import SettingsPrediction from "../screens/SettingsPrediction";
+import SettingsPersonal from "../screens/SettingsPersonal";
+import SettingsNotifs from "../screens/SettingsNotifs";
 
 import Colors from "../constants/Themes";
 
@@ -70,6 +73,27 @@ const SettingsStack = createStackNavigator(
 			screen: SettingsScreen,
 			navigationOptions: {
 				headerTransparent: true
+			}
+		},
+		SettingsPrediction: {
+			screen: SettingsPrediction,
+			navigationOptions: {
+				headerTransparent: true,
+				tabBarVisible: false
+			}
+		},
+		SettingsPersonal: {
+			screen: SettingsPersonal,
+			navigationOptions: {
+				headerTransparent: true,
+				tabBarVisible: false
+			}
+		},
+		SettingsNotifs: {
+			screen: SettingsNotifs,
+			navigationOptions: {
+				headerTransparent: true,
+				tabBarVisible: false
 			}
 		}
 	},

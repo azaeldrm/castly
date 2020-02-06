@@ -17,6 +17,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 // import moment from "moment-timezone";
 import Header from "../components/Header";
 import Colors from "../constants/Themes";
+import firebase from "firebase";
 
 let THEMESTYLE = "dark";
 
@@ -75,6 +76,8 @@ export default class HomeScreen extends React.Component {
 			predictionObject: null
 		};
 	}
+
+	user = firebase.auth().currentUser;
 
 	icons = {
 		"partly-cloudy-day": "weather-partlycloudy",
@@ -213,7 +216,7 @@ export default class HomeScreen extends React.Component {
 						style={{marginHorizontal: 40, paddingTop: 30, paddingBottom: 50}}
 					>
 						<Text h3 style={{color: theme.info}}>
-							Welcome Azael!
+							Welcome {this.user.displayName}!
 						</Text>
 						<Text style={[{color: theme.info}, vars.subtitleText]}>
 							These are the stats for your location:

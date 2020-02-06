@@ -9,28 +9,71 @@ let THEMESTYLE = "dark";
 
 export default class Loading extends React.Component {
 
+	user = firebase.auth().currentUser;
+
+	logOut = () => {
+		firebase
+			.auth()
+			.signOut()
+			.then(() => {
+				console.log("Log out successfully.");
+			})
+			.catch((error) => {
+				console.log(`LOG OUT ERROR: ${error}`)
+			})
+		}
+
 	render() {
 		return (
-			<Block flex={1} style={{alignSelf: 'center', justifyContent: 'center', width: '100%', backgroundColor: theme.background}}>
+			<Block flex={1} style={{alignSelf: 'center', width: '100%', backgroundColor: theme.background}}>
 				<Block style={{height: 24}} />
-				<TouchableOpacity
-				style={{marginVertical: 30}}
-					onPress={() =>
-						firebase
-							.auth()
-							.signOut()
-							.then(function() {
-								console.log("Log out successfully.");
-							})
-							.catch(function(error) {
-								console.log(`LOG OUT ERROR: ${error}`)
-							})
-					}
+				<Block
+					style={{marginHorizontal: 40, paddingTop: 30, paddingBottom: 50}}
 				>
-					<Text h4 style={[{color: theme.info, textAlign: 'center'}, vars.infoText]}>
-						LOG OUT
+					<Text h3 style={{color: theme.info}}>
+						Hi {this.user.displayName}!
 					</Text>
-				</TouchableOpacity>
+					<Text style={[{color: theme.info}, vars.subtitleText]}>
+						Explore and make changes to your settings:
+					</Text>
+				</Block>
+				<Block
+					style={{marginHorizontal: 40, paddingTop: 30, paddingBottom: 50}}
+				>
+					<TouchableOpacity
+						style={{paddingVertical: 20}}
+						onPress={() => {this.props.navigation.navigate("SettingsPrediction")}}
+					>
+						<Text h3 style={[{color: theme.info}, vars.infoText]}>
+							Prediction preferences
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={{paddingVertical: 20}}
+						onPress={() => {this.props.navigation.navigate("SettingsPersonal")}}
+					>
+						<Text h3 style={[{color: theme.info}, vars.infoText]}>
+							Personal information
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={{paddingVertical: 20}}
+						onPress={() => {this.props.navigation.navigate("SettingsNotifs")}}
+					>
+						<Text h3 style={[{color: theme.info}, vars.infoText]}>
+							Notifications
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={{paddingVertical: 20}}
+						onPress={() => this.logOut()}
+					>
+						<Text h3 style={[{color: theme.info, marginBottom: 30}, vars.infoText]}>
+							Log out
+						</Text>
+					</TouchableOpacity>
+				</Block>
+
 			</Block>
 		);
 	}
